@@ -1,6 +1,0 @@
-@BloggingToolBackend_HostAddress = http://localhost:5045
-
-GET {{BloggingToolBackend_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

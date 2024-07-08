@@ -20,8 +20,6 @@ namespace BloggingTool.Models {
     [Required]
     public required int EmailAccountId { get; set; }
 
-    [Required]
-    public required EmailAccount EmailAccount { get; set; }
     public ICollection<Article>? Articles { get; set; } = new List<Article>();
   } 
 }

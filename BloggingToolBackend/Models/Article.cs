@@ -11,26 +11,24 @@ namespace BloggingTool.Models {
 
     [Required]
     [MaxLength(50)]
+    public required string ArticleAuthor { get; set; }
+
+    [Required]
+    [MaxLength(50)]
     public required string ArticleStatus { get; set; }
 
     [Required]
     public required DateTime CreatedTimestamp { get; set; } = DateTime.Now;
-    public DateTime? UpdatedTimestamp { get; set; } = DateTime.Now;
-    public DateTime? PublishedTimestamp { get; set; } = DateTime.Now;
+    public DateTime? UpdatedTimestamp { get; set; }
+    public DateTime? PublishedTimestamp { get; set; }
     public int? ArticleViewsCount { get; set; } = 0;
+
+    public required string Content { get; set; }
 
     [Required]
     public required int BlogId { get; set; }
-
-    [Required]
-    public required Blog Blog { get; set; }
-    
-    [Required]
-    public required ArticleContent ArticleContent { get; set; }
-
     public ICollection<ArticleComment>? ArticleComments { get; set; } = new List<ArticleComment>();
 
     public ICollection<ArticleLike>? ArticleLikes { get; set; } = new List<ArticleLike>();
-
   }
 }
