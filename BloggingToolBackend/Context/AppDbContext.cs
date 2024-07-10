@@ -137,12 +137,12 @@ namespace BloggingTool.Context
 
                 articleLikeEntity.HasKey(articleLike => articleLike.LikeId);
 
-                articleLikeEntity.HasOne(articleLike => articleLike.Article)
+                articleLikeEntity.HasOne<Article>()
                     .WithMany(article => article.ArticleLikes)
                     .HasForeignKey(articleLike => articleLike.ArticleId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                articleLikeEntity.HasOne(articleLike => articleLike.EmailAccount)
+                articleLikeEntity.HasOne<EmailAccount>()
                     .WithMany(emailAccount => emailAccount.ArticleLikes)
                     .HasForeignKey(articleLike => articleLike.EmailAccountId)
                     .OnDelete(DeleteBehavior.Cascade);

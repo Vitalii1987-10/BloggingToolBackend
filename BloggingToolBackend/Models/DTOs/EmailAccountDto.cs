@@ -12,10 +12,9 @@ namespace BloggingTool.DTOs
     public class ExistingUserEmailAccountDto
     {
         public required string EmailAddress { get; set; }
-        public int UserId { get; set; }
     }
 
-    public class EmailAccountResponse
+    public class EmailAccountResponseDto
     {
         public required string EmailAddress { get; set; }
     }

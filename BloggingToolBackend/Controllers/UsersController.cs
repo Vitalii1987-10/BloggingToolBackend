@@ -5,7 +5,7 @@ using BloggingTool.Context;
 using BloggingTool.DTOs;
 
 [ApiController]
-[Route("[controller]")]
+[Route("users")]
 public class UsersController : ControllerBase {
     private readonly AppDbContext _context;
 
@@ -13,8 +13,12 @@ public class UsersController : ControllerBase {
         _context = context;
     }
 
-    // Adds a new user.
-    [HttpPost("add-user")]
+    /// <summary>
+    /// Adds a new user.
+    /// </summary>
+    /// <param name="userDto">The DTO containing user details.</param>
+    /// <returns>A newly created user with associated email accounts.</returns>
+    [HttpPost]
     public async Task<IActionResult> AddUser(UserDto userDto) {
         if (!ModelState.IsValid) {
             return BadRequest(ModelState);
@@ -56,8 +60,12 @@ public class UsersController : ControllerBase {
         return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, response);
     }
 
-    // Gets a user by ID.
-    [HttpGet("get-user/{id}")]
+    /// <summary>
+    /// Retrieves a user by ID.
+    /// </summary>
+    /// <param name="id">The ID of the user to retrieve.</param>
+    /// <returns>The user with the specified ID, including associated email accounts.</returns>
+    [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUserById(int id) {
         var user = await _context.Users
           .Include(emailAccount => emailAccount.EmailAccounts) 
@@ -67,6 +75,40 @@ public class UsersController : ControllerBase {
             return NotFound();
         }
 
-        return user;
+        var response = new UserDetailDto 
+        {
+            UserName = user.UserName,
+            EmailAccounts = user.EmailAccounts.Select(emailAccount => new EmailAccountDto
+            {
+                EmailAccountId = emailAccount.EmailAccountId,
+                EmailAddress = emailAccount.EmailAddress
+            }).ToList()
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Retrieves all users.
+    /// </summary>
+    /// <returns>A list of all users with their associated email accounts.</returns>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+    {
+        var users = await _context.Users
+          .Include(user => user.EmailAccounts)
+          .ToListAsync();
+
+        var response = users.Select(user => new UserDetailDto
+        {
+            UserName = user.UserName,
+            EmailAccounts = user.EmailAccounts.Select(emailAccount => new EmailAccountDto
+            {
+                EmailAccountId = emailAccount.EmailAccountId,
+                EmailAddress = emailAccount.EmailAddress
+            }).ToList()
+        }).ToList();
+
+        return Ok(response);
     }
 }

@@ -8,7 +8,7 @@ namespace BloggingTool.DTOs{
     public required string BlogTitle { get; set; }
     public required string BlogAuthor { get; set; }
     public required string BlogCategory { get; set; }
-    public required int EmailAccountid { get; set; } 
+    // public required int EmailAccountid { get; set; } 
   }
 
   public class BlogResponseDto 
@@ -18,8 +18,8 @@ namespace BloggingTool.DTOs{
     public required string BlogTitle { get; set; }
     public required string BlogAuthor { get; set; }
     public required string BlogCategory { get; set; }
-    [JsonIgnore]
-    public int EmailAccountId { get; set; }
+    // [JsonIgnore]
+    // public int EmailAccountId { get; set; }
   }
 
   public class BlogUpdateDto

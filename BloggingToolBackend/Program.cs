@@ -13,6 +13,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {Title = "BloggingTool", Version = "v1"});
+
+    // Set the comments path for the Swagger JSON and UI.
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();

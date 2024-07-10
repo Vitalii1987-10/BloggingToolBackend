@@ -4,7 +4,8 @@ using BloggingTool.Context;
 using BloggingTool.DTOs; 
 
 [ApiController]
-[Route("[controller]")]
+// [Route("[controller]")]
+[Route("user/{emailAccountId}")]
 public class EmailAccountsController : ControllerBase {
   private readonly AppDbContext _context;
 
@@ -12,9 +13,14 @@ public class EmailAccountsController : ControllerBase {
     _context = context;
   }
 
-  //Add emailAccount
-  [HttpPost("add-emailAccount")]
-  public async Task<IActionResult> AddEmailAccount(ExistingUserEmailAccountDto emailAccountDto) {
+  /// <summary>
+  /// Adds a new email account for a specific user.
+  /// </summary>
+  /// <param name="emailAccountId">The ID of the user to add the email account to.</param>
+  /// <param name="emailAccountDto">The email account details.</param>
+  /// <returns>The created email account.</returns>
+  [HttpPost]
+  public async Task<IActionResult> AddEmailAccount(int emailAccountId, ExistingUserEmailAccountDto emailAccountDto) {
 
     if(!ModelState.IsValid) {
       return BadRequest(ModelState);
@@ -23,10 +29,10 @@ public class EmailAccountsController : ControllerBase {
     var emailAccount = new EmailAccount
     {
       EmailAddress = emailAccountDto.EmailAddress,
-      UserId = emailAccountDto.UserId
+      UserId = emailAccountId
     };
 
-    var response = new EmailAccountResponse
+    var response = new EmailAccountResponseDto
     {
       EmailAddress = emailAccount.EmailAddress
     };
@@ -37,14 +43,24 @@ public class EmailAccountsController : ControllerBase {
     return CreatedAtAction(nameof(GetEmailAccountById), new { id = emailAccount.EmailAccountId}, response);
   }
 
-  [HttpGet("get-emailAccount/{id}")]
-  public async Task<ActionResult<EmailAccount>> GetEmailAccountById(int id) {
-    var emailAccount = await _context.EmailAccounts.FindAsync(id);
+  /// <summary>
+  /// Retrieves an email account by its ID.
+  /// </summary>
+  /// <param name="emailAccountId">The ID of the email account to retrieve.</param>
+  /// <returns>The email account details.</returns>
+  [HttpGet]
+  public async Task<ActionResult<EmailAccount>> GetEmailAccountById(int emailAccountId) {
+    var emailAccount = await _context.EmailAccounts.FindAsync(emailAccountId);
 
     if(emailAccount == null) {
       return NotFound();
     }
 
-    return emailAccount;
+    var response = new EmailAccountResponseDto
+    {
+      EmailAddress = emailAccount.EmailAddress,
+    };
+
+    return Ok(response);
   }
 }

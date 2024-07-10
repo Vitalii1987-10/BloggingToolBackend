@@ -13,11 +13,5 @@ namespace BloggingTool.Models {
 
         [Required]
         public int EmailAccountId { get; set; }
-
-        [Required]
-        public required Article Article { get; set; }
-
-        [Required]
-        public required EmailAccount EmailAccount { get; set; }
     }
 }
