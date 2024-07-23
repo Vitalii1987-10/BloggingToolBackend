@@ -49,7 +49,7 @@ public class EmailAccountsController : ControllerBase {
   /// <param name="emailAccountId">The ID of the email account to retrieve.</param>
   /// <returns>The email account details.</returns>
   [HttpGet]
-  public async Task<ActionResult<EmailAccount>> GetEmailAccountById(int emailAccountId) {
+  public async Task<ActionResult<EmailAccountResponseDto>> GetEmailAccountById(int emailAccountId) {
     var emailAccount = await _context.EmailAccounts.FindAsync(emailAccountId);
 
     if(emailAccount == null) {

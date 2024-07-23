@@ -18,9 +18,9 @@ namespace BloggingTool.Models {
     public required string ArticleStatus { get; set; }
 
     [Required]
-    public required DateTime CreatedTimestamp { get; set; } = DateTime.Now;
-    public DateTime? UpdatedTimestamp { get; set; }
-    public DateTime? PublishedTimestamp { get; set; }
+    public required string CreatedTimestamp { get; set; } 
+    public required string UpdatedTimestamp { get; set; }
+    public required string PublishedTimestamp { get; set; }
     public int? ArticleViewsCount { get; set; } = 0;
 
     public required string Content { get; set; }

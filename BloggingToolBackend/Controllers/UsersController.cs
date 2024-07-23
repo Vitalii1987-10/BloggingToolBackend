@@ -77,6 +77,7 @@ public class UsersController : ControllerBase {
 
         var response = new UserDetailDto 
         {
+            UserId = user.UserId,
             UserName = user.UserName,
             EmailAccounts = user.EmailAccounts.Select(emailAccount => new EmailAccountDto
             {
@@ -101,6 +102,7 @@ public class UsersController : ControllerBase {
 
         var response = users.Select(user => new UserDetailDto
         {
+            UserId = user.UserId,
             UserName = user.UserName,
             EmailAccounts = user.EmailAccounts.Select(emailAccount => new EmailAccountDto
             {

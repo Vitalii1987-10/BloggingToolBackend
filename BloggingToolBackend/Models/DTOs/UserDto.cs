@@ -21,6 +21,7 @@ namespace BloggingTool.DTOs
 
   public class UserDetailDto
   {
+      public int UserId { get; set; }
       public required string UserName { get; set; }
       public required List<EmailAccountDto> EmailAccounts { get; set; }
   }

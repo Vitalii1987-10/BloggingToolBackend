@@ -8,18 +8,22 @@ namespace BloggingTool.DTOs{
     public required string BlogTitle { get; set; }
     public required string BlogAuthor { get; set; }
     public required string BlogCategory { get; set; }
-    // public required int EmailAccountid { get; set; } 
   }
 
   public class BlogResponseDto 
   {
-    [JsonIgnore]
+    public required int BlogId { get; set; }
+    public required string BlogTitle { get; set; }
+    public required string BlogAuthor { get; set; }
+    public required string BlogCategory { get; set; }
+  }
+
+  public class BlogsResponseDto
+  {
     public int BlogId { get; set; }
     public required string BlogTitle { get; set; }
     public required string BlogAuthor { get; set; }
     public required string BlogCategory { get; set; }
-    // [JsonIgnore]
-    // public int EmailAccountId { get; set; }
   }
 
   public class BlogUpdateDto

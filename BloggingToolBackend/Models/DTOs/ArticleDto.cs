@@ -1,4 +1,4 @@
-using BloggingTool.Models; // Add this using directive
+using System.Text.Json.Serialization;
 
 namespace BloggingTool.DTOs 
 {
@@ -7,18 +7,15 @@ namespace BloggingTool.DTOs
     public required string ArticleTitle { get; set; }
     public required string ArticleAuthor { get; set; }
     public required string ArticleStatus { get; set; }
-    public required DateTime CreatedTimestamp { get; set; } 
-    public DateOnly? UpdatedTimestamp { get; set; }
-    public DateOnly? PublishedTimestamp { get; set; }
     public int? ArticleViewsCount { get; set; } = 0;
     public required string Content { get; set; }
-    public required int BlogId { get; set; }
   }
 
   public class ArticleUpdateDto
   {
     public required string ArticleTitle { get; set; }
     public required string ArticleAuthor { get; set; }
+    public required string Content { get; set; }
   }
 
     public class ArticleOnCreateResponseDto
@@ -27,13 +24,11 @@ namespace BloggingTool.DTOs
 
     public required string ArticleAuthor { get; set; }
     public required string ArticleStatus { get; set; }
-    public required DateTime CreatedTimestamp { get; set; } 
-    public DateOnly? UpdatedTimestamp { get; set; }
-    public DateOnly? PublishedTimestamp { get; set; }
+    public required string CreatedTimestamp { get; set; } 
+    public string? UpdatedTimestamp { get; set; }
+    public string? PublishedTimestamp { get; set; }
     public int? ArticleViewsCount { get; set; }
-
     public required string Content { get; set; }
-
     public required int BlogId { get; set; }
   }
 
@@ -42,7 +37,11 @@ namespace BloggingTool.DTOs
       public int ArticleId { get; set; }
       public required string ArticleTitle { get; set; }
       public required string ArticleAuthor { get; set; }
-      public DateTime CreatedTimestamp { get; set; }
+      public required string ArticleStatus { get; set;}
+      public required string CreatedTimestamp { get; set; }
+      public required string UpdatedTimestamp { get; set; }
+      public required string PublishedTimestamp { get; set; }
+      public int? ArticleViewsCount { get; set; }
   }
 
   public class GetArticleByIdResponseDto
@@ -50,5 +49,14 @@ namespace BloggingTool.DTOs
     public required string ArticleTitle { get; set; }
     public required string ArticleAuthor { get ; set; }
     public required string Content { get; set; }
+  }
+
+  
+  public class ReaderGetArticleByIdResponseDto
+  {
+    public required string ArticleTitle { get; set; }
+    public required string ArticleAuthor { get ; set; }
+    public required string Content { get; set; }
+    public int? ArticleViewsCount { get; set; }
   }
 }

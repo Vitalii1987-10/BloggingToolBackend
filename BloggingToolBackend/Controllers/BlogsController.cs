@@ -64,10 +64,10 @@ public class BlogsController : ControllerBase
   /// <param name="blogId">The ID of the blog to retrieve.</param>
   /// <returns>The blog details.</returns>
   [HttpGet("blog/{blogId}")]
-  public async Task<ActionResult<Blog>> GetBlogById(int emailAccountId, int blogId)
+  public async Task<ActionResult<BlogResponseDto>> GetBlogById(int emailAccountId, int blogId)
   {
       var blog = await _context.Blogs
-          .Where(b => b.EmailAccountId == emailAccountId && b.BlogId == blogId)
+          .Where(blog => blog.BlogId == blogId)
           .FirstOrDefaultAsync();
 
       if(blog == null)
@@ -75,7 +75,15 @@ public class BlogsController : ControllerBase
           return NotFound();
       }
 
-      return blog;
+      var response = new BlogResponseDto
+      {
+        BlogId = blog.BlogId,
+        BlogTitle = blog.BlogTitle,
+        BlogAuthor = blog.BlogAuthor,
+        BlogCategory = blog.BlogCategory
+      };
+
+      return response;
   }
 
 /// <summary>
@@ -86,10 +94,10 @@ public class BlogsController : ControllerBase
 /// Returns a list of blogs associated with the specified email account.
 /// If no blogs are found, returns a 404 Not Found response.
 /// </returns>
-  [HttpGet("blogs")]
-  public async Task<ActionResult<IEnumerable<Blog>>> GetAllBlogs(int emailAccountId)
+  [HttpGet("authorGetAllBlogs")]
+  public async Task<ActionResult<IEnumerable<BlogsResponseDto>>> AuthorGetAllBlogs(int emailAccountId)
   {
-    var blogs = await _context.Blogs
+      var blogs = await _context.Blogs
       .Where(blog => blog.EmailAccountId == emailAccountId)
       .ToListAsync();
 
@@ -98,8 +106,45 @@ public class BlogsController : ControllerBase
         return NotFound();
       }
 
-      return blogs;
+    var response = blogs.Select(blog => new BlogsResponseDto
+    {
+        BlogId = blog.BlogId,
+        BlogTitle = blog.BlogTitle,
+        BlogAuthor = blog.BlogAuthor,
+        BlogCategory = blog.BlogCategory
+    }).ToList();
+
+      return response;
   }
+
+/// <summary>
+/// Retrieves all blogs from the database.
+/// </summary>
+/// <returns>
+/// Returns a list of all blogs in the database. If no blogs are found, returns a 404 Not Found response.
+/// </returns>
+[HttpGet("readerGetAllBlogs")]
+public async Task<ActionResult<IEnumerable<BlogsResponseDto>>> ReaderGetAllBlogs()
+{
+    // Retrieve all blogs from the database
+    var blogs = await _context.Blogs.ToListAsync();
+
+    if (blogs == null || !blogs.Any())
+    {
+        return NotFound();
+    }
+
+    // Map the blogs to the response DTOs
+    var response = blogs.Select(blog => new BlogsResponseDto
+    {
+        BlogId = blog.BlogId,
+        BlogTitle = blog.BlogTitle,
+        BlogAuthor = blog.BlogAuthor,
+        BlogCategory = blog.BlogCategory
+    }).ToList();
+
+    return Ok(response);
+}
 
   /// <summary>
   /// Deletes a blog by its ID.

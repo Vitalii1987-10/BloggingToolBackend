@@ -51,24 +51,25 @@ public class ArticleCommentController : ControllerBase
   }
 
 
-    /// <summary>
-    /// Retrieves all comments for a specified article.
-    /// </summary>
-    /// <param name="articleId">The ID of the article to retrieve comments for.</param>
-    /// <returns>Returns a list of comments associated with the specified article.</returns>
-    [HttpGet("get-comments")]
-    public async Task<ActionResult<IEnumerable<ArticleCommentDto>>> GetAllComments(int articleId)
-    {
-        var comments = await _context.ArticlesComments
-            .Where(comment => comment.ArticleId == articleId)
-            .Select(comment => new ArticleCommentDto
-            {
-                CommentatorName = comment.CommentatorName,
-                Comment = comment.Comment,
-                CreatedTimestamp = comment.CreatedTimestamp
-            })
-            .ToListAsync();
+/// <summary>
+/// Retrieves all comments for a specified article.
+/// </summary>
+/// <param name="articleId">The ID of the article to retrieve comments for.</param>
+/// <returns>Returns a list of comments associated with the specified article.</returns>
+[HttpGet("get-comments")]
+public async Task<ActionResult<IEnumerable<ArticleCommentDto>>> GetAllComments(int articleId)
+{
+    var comments = await _context.ArticlesComments
+        .Where(comment => comment.ArticleId == articleId)
+        .OrderByDescending(comment => comment.CreatedTimestamp)
+        .Select(comment => new ArticleCommentDto
+        {
+            CommentatorName = comment.CommentatorName,
+            Comment = comment.Comment,
+            CreatedTimestamp = comment.CreatedTimestamp
+        })
+        .ToListAsync();
 
-        return Ok(comments);
-    }
+    return Ok(comments);
+}
 }

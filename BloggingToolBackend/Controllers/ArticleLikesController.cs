@@ -40,12 +40,7 @@ public class ArticleLikeController : ControllerBase
     _context.ArticleLikes.Add(articleLike);
     await _context.SaveChangesAsync();
 
-    var response = new ArticleLikeGetLikeByIdResponse
-    {
-      IsLiked = articleLike.IsLiked,
-    };
-
-    return CreatedAtAction(nameof(GetLikeById), new {likeId = articleLike.LikeId}, response);
+    return NoContent();
   }
 
 
@@ -113,3 +108,6 @@ public class ArticleLikeController : ControllerBase
     return NoContent();
   }
 }
+
+
+

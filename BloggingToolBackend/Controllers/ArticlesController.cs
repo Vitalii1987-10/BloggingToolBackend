@@ -34,20 +34,22 @@ public class ArticlesController : ControllerBase
       ArticleTitle = articleDto.ArticleTitle,
       ArticleAuthor = articleDto.ArticleAuthor,
       ArticleStatus = articleDto.ArticleStatus,
-      CreatedTimestamp = articleDto.CreatedTimestamp,
+      CreatedTimestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm"),
+      UpdatedTimestamp = "-",
+      PublishedTimestamp = "-",
       ArticleViewsCount = articleDto.ArticleViewsCount,
       Content = articleDto.Content,
       BlogId = blogId
     };
 
     var response = new ArticleOnCreateResponseDto {
-      ArticleTitle = articleDto.ArticleTitle,
-      ArticleAuthor = articleDto.ArticleAuthor,
-      ArticleStatus = articleDto.ArticleStatus,
-      CreatedTimestamp = articleDto.CreatedTimestamp,
-      ArticleViewsCount = articleDto.ArticleViewsCount,
-      Content = articleDto.Content,
-      BlogId = articleDto.BlogId
+      ArticleTitle = article.ArticleTitle,
+      ArticleAuthor = article.ArticleAuthor,
+      ArticleStatus = article.ArticleStatus,
+      CreatedTimestamp = article.CreatedTimestamp,
+      ArticleViewsCount = article.ArticleViewsCount,
+      Content = article.Content,
+      BlogId = article.BlogId
     };
 
     _context.Articles.Add(article);
@@ -55,6 +57,29 @@ public class ArticlesController : ControllerBase
 
     return CreatedAtAction(nameof(GetArticleById), new { emailAccountId, blogId, articleId = article.ArticleId}, response);
   }
+
+    /// <summary>
+    /// Increments the view count for an article.
+    /// </summary>
+    /// <param name="articleId">The ID of the article.</param>
+    /// <returns>Returns no content if the update is successful.</returns>
+    [HttpPost("article/{articleId}/increment-views")]
+    public async Task<IActionResult> IncrementViews(int articleId)
+    {
+        var article = await _context.Articles
+            .FirstOrDefaultAsync(article => article.ArticleId == articleId);
+
+        if (article == null)
+        {
+            return NotFound();
+        }
+
+        article.ArticleViewsCount++;
+        _context.Articles.Update(article);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 
   /// <summary>
   /// Retrieves an article by its ID.
@@ -83,6 +108,34 @@ public class ArticlesController : ControllerBase
   }
 
   /// <summary>
+  /// Retrieves an article by its ID, including view count.
+  /// </summary>
+  /// <param name="emailAccountId">The ID of the email account.</param>
+  /// <param name="blogId">The ID of the blog.</param>
+  /// <param name="articleId">The ID of the article to retrieve.</param>
+  [HttpGet("reader-article/{articleId}")]
+  public async Task<ActionResult<GetArticleByIdResponseDto>> ReaderGetArticleById(int emailAccountId, int blogId, int articleId)
+  {
+    var article = await _context.Articles
+        .Where(article => article.ArticleId == articleId && article.BlogId == blogId)
+        .Select(article => new ReaderGetArticleByIdResponseDto
+        {
+            ArticleTitle = article.ArticleTitle,
+            ArticleAuthor = article.ArticleAuthor,
+            Content = article.Content,
+            ArticleViewsCount = article.ArticleViewsCount // Include the views count
+        })
+        .FirstOrDefaultAsync();
+
+    if (article == null)
+    {
+        return NotFound();
+    }
+
+    return Ok(article);
+}
+
+  /// <summary>
   /// Retrieves all articles associated with a specific blog.
   /// </summary>
   /// <param name="emailAccountId">The ID of the email account.</param>
@@ -95,7 +148,11 @@ public class ArticlesController : ControllerBase
         ArticleId = article.ArticleId,
         ArticleTitle = article.ArticleTitle,
         ArticleAuthor = article.ArticleAuthor,
-        CreatedTimestamp = article.CreatedTimestamp
+        ArticleStatus = article.ArticleStatus,
+        CreatedTimestamp = article.CreatedTimestamp,
+        UpdatedTimestamp = article.UpdatedTimestamp,
+        PublishedTimestamp = article.PublishedTimestamp,
+        ArticleViewsCount = article.ArticleViewsCount
       })
       .ToListAsync();
 
@@ -113,7 +170,7 @@ public class ArticlesController : ControllerBase
   /// <param name="emailAccountId">The ID of the email account.</param>
   /// <param name="blogId">The ID of the blog.</param>
   /// <param name="articleId">The ID of the article to delete.</param>
-  [HttpDelete("delete-article/{articleId}")]
+  [HttpDelete("article/{articleId}/delete-article")]
   public async Task<IActionResult> DeleteArticleById(int emailAccountId, int blogId, int articleId)
   {
     var article = await _context.Articles
@@ -138,7 +195,7 @@ public class ArticlesController : ControllerBase
   /// <param name="blogId">The ID of the blog.</param>
   /// <param name="articleId">The ID of the article to update.</param>
   /// <param name="articleUpdateDto">The DTO containing updated article details.</param>
-  [HttpPut("update-article/{articleId}")]
+  [HttpPut("article/{articleId}/update-article")]
   public async Task<IActionResult> UpdateArticle(int emailAccountId, int blogId, int articleId, ArticleUpdateDto articleUpdateDto)
   {
     if(!ModelState.IsValid)
@@ -156,10 +213,68 @@ public class ArticlesController : ControllerBase
 
     article.ArticleTitle = articleUpdateDto.ArticleTitle;
     article.ArticleAuthor = articleUpdateDto.ArticleAuthor;
+    article.Content = articleUpdateDto.Content;
 
     _context.Entry(article).State = EntityState.Modified;
     await _context.SaveChangesAsync();
 
     return NoContent();
   }
+
+[HttpPut("article/{articleId}/publish")]
+public async Task<IActionResult> PublishArticle(int blogId, int articleId)
+{
+  try
+  {
+    var article = await _context.Articles
+        .Where(a => a.BlogId == blogId && a.ArticleId == articleId)
+        .FirstOrDefaultAsync();
+
+    if (article == null)
+    {
+        return NotFound();
+    }
+
+    // Update article properties based on the DTO
+    article.ArticleStatus = "Published";
+    article.PublishedTimestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm");
+
+    _context.Entry(article).State = EntityState.Modified;
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+  }
+  catch (Exception ex)
+  {
+    return StatusCode(500, $"Internal server error: {ex.Message}");
+  }
+}
+
+[HttpPut("article/{articleId}/to-drafts")]
+public async Task<IActionResult> ToDraftArticle(int blogId, int articleId)
+{
+  try
+  {
+    var article = await _context.Articles
+        .Where(a => a.BlogId == blogId && a.ArticleId == articleId)
+        .FirstOrDefaultAsync();
+
+    if (article == null)
+    {
+        return NotFound();
+    }
+
+    // Update article properties based on the DTO
+    article.ArticleStatus = "Draft";
+
+    _context.Entry(article).State = EntityState.Modified;
+    await _context.SaveChangesAsync();
+
+    return NoContent();
+  }
+  catch (Exception ex)
+  {
+    return StatusCode(500, $"Internal server error: {ex.Message}");
+  }
+}
 }
