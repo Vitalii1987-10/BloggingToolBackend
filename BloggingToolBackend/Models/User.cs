@@ -9,8 +9,8 @@ namespace BloggingTool.Models {
     [Required]
     [MaxLength(100)]
     public required string UserName { get; set; }
-
-
-    public ICollection<EmailAccount>? EmailAccounts { get; set; }
+    
+    [Required]
+    public required ICollection<EmailAccount> EmailAccounts { get; set; }
   }
 }

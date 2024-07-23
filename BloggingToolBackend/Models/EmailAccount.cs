@@ -12,11 +12,8 @@ namespace BloggingTool.Models {
     [Required]
     public required int UserId { get; set; }
 
-    [Required]
-    public required User User { get; set; }
+    public ICollection<Blog>? Blogs { get; set; }
 
-    public required ICollection<Blog> Blogs { get; set; }
-
-    public required ICollection<ArticleLike> ArticleLikes { get; set; }
+    public ICollection<ArticleLike>? ArticleLikes { get; set; } = new List<ArticleLike>();
   }
 }

@@ -16,8 +16,5 @@ namespace BloggingTool.Models {
 
     [Required]
     public required int ArticleId { get; set; }
-
-    [Required]
-    public required Article Article { get; set; }
   }
 }

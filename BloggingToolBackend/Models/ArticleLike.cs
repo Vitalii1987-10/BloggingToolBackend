@@ -6,18 +6,12 @@ namespace BloggingTool.Models {
         public int LikeId { get; set; }
 
          [Required]
-        public bool IsLiked { get; set; } = true; // Default value set to true (which corresponds to 1 in your previous setup)
+        public bool IsLiked { get; set; } = true;
 
         [Required]
         public int ArticleId { get; set; }
 
         [Required]
         public int EmailAccountId { get; set; }
-
-        [Required]
-        public required Article Article { get; set; }
-
-        [Required]
-        public required EmailAccount EmailAccount { get; set; }
     }
 }

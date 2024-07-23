@@ -25,7 +25,7 @@ namespace BloggingToolBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EmailAccount",
+                name: "EmailAccounts",
                 columns: table => new
                 {
                     EmailAccountId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -35,9 +35,9 @@ namespace BloggingToolBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmailAccount", x => x.EmailAccountId);
+                    table.PrimaryKey("PK_EmailAccounts", x => x.EmailAccountId);
                     table.ForeignKey(
-                        name: "FK_EmailAccount_Users_UserId",
+                        name: "FK_EmailAccounts_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -59,9 +59,9 @@ namespace BloggingToolBackend.Migrations
                 {
                     table.PrimaryKey("PK_Blogs", x => x.BlogId);
                     table.ForeignKey(
-                        name: "FK_Blogs_EmailAccount_EmailAccountId",
+                        name: "FK_Blogs_EmailAccounts_EmailAccountId",
                         column: x => x.EmailAccountId,
-                        principalTable: "EmailAccount",
+                        principalTable: "EmailAccounts",
                         principalColumn: "EmailAccountId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -73,11 +73,13 @@ namespace BloggingToolBackend.Migrations
                     ArticleId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ArticleTitle = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ArticleAuthor = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     ArticleStatus = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     CreatedTimestamp = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "datetime('now', 'localtime')"),
                     UpdatedTimestamp = table.Column<DateTime>(type: "TEXT", nullable: true),
                     PublishedTimestamp = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ArticleViewsCount = table.Column<int>(type: "INTEGER", nullable: true, defaultValue: 0),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
                     BlogId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -111,9 +113,9 @@ namespace BloggingToolBackend.Migrations
                         principalColumn: "ArticleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ArticleLikes_EmailAccount_EmailAccountId",
+                        name: "FK_ArticleLikes_EmailAccounts_EmailAccountId",
                         column: x => x.EmailAccountId,
-                        principalTable: "EmailAccount",
+                        principalTable: "EmailAccounts",
                         principalColumn: "EmailAccountId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -124,7 +126,7 @@ namespace BloggingToolBackend.Migrations
                 {
                     CommentId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CommentatorName = table.Column<string>(type: "TEXT", nullable: false),
+                    CommentatorName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Comment = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedTimestamp = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "datetime('now', 'localtime')"),
                     ArticleId = table.Column<int>(type: "INTEGER", nullable: false)
@@ -134,26 +136,6 @@ namespace BloggingToolBackend.Migrations
                     table.PrimaryKey("PK_ArticlesComments", x => x.CommentId);
                     table.ForeignKey(
                         name: "FK_ArticlesComments_Articles_ArticleId",
-                        column: x => x.ArticleId,
-                        principalTable: "Articles",
-                        principalColumn: "ArticleId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ArticlesContents",
-                columns: table => new
-                {
-                    ContentId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Content = table.Column<string>(type: "TEXT", nullable: false),
-                    ArticleId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ArticlesContents", x => x.ContentId);
-                    table.ForeignKey(
-                        name: "FK_ArticlesContents_Articles_ArticleId",
                         column: x => x.ArticleId,
                         principalTable: "Articles",
                         principalColumn: "ArticleId",
@@ -181,19 +163,13 @@ namespace BloggingToolBackend.Migrations
                 column: "ArticleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArticlesContents_ArticleId",
-                table: "ArticlesContents",
-                column: "ArticleId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Blogs_EmailAccountId",
                 table: "Blogs",
                 column: "EmailAccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmailAccount_UserId",
-                table: "EmailAccount",
+                name: "IX_EmailAccounts_UserId",
+                table: "EmailAccounts",
                 column: "UserId");
         }
 
@@ -207,16 +183,13 @@ namespace BloggingToolBackend.Migrations
                 name: "ArticlesComments");
 
             migrationBuilder.DropTable(
-                name: "ArticlesContents");
-
-            migrationBuilder.DropTable(
                 name: "Articles");
 
             migrationBuilder.DropTable(
                 name: "Blogs");
 
             migrationBuilder.DropTable(
-                name: "EmailAccount");
+                name: "EmailAccounts");
 
             migrationBuilder.DropTable(
                 name: "Users");

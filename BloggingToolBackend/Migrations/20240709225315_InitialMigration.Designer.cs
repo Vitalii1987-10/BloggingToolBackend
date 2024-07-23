@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BloggingToolBackend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240707051017_InitialMigration")]
+    [Migration("20240709225315_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -25,6 +25,11 @@ namespace BloggingToolBackend.Migrations
                     b.Property<int>("ArticleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ArticleAuthor")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ArticleStatus")
                         .IsRequired()
@@ -43,6 +48,10 @@ namespace BloggingToolBackend.Migrations
 
                     b.Property<int>("BlogId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedTimestamp")
                         .ValueGeneratedOnAdd()
@@ -77,6 +86,7 @@ namespace BloggingToolBackend.Migrations
 
                     b.Property<string>("CommentatorName")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedTimestamp")
@@ -89,27 +99,6 @@ namespace BloggingToolBackend.Migrations
                     b.HasIndex("ArticleId");
 
                     b.ToTable("ArticlesComments");
-                });
-
-            modelBuilder.Entity("BloggingTool.Models.ArticleContent", b =>
-                {
-                    b.Property<int>("ContentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ArticleId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ContentId");
-
-                    b.HasIndex("ArticleId")
-                        .IsUnique();
-
-                    b.ToTable("ArticlesContents");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.ArticleLike", b =>
@@ -185,7 +174,7 @@ namespace BloggingToolBackend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EmailAccount");
+                    b.ToTable("EmailAccounts");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.User", b =>
@@ -206,84 +195,58 @@ namespace BloggingToolBackend.Migrations
 
             modelBuilder.Entity("BloggingTool.Models.Article", b =>
                 {
-                    b.HasOne("BloggingTool.Models.Blog", "Blog")
+                    b.HasOne("BloggingTool.Models.Blog", null)
                         .WithMany("Articles")
                         .HasForeignKey("BlogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Blog");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.ArticleComment", b =>
                 {
-                    b.HasOne("BloggingTool.Models.Article", "Article")
+                    b.HasOne("BloggingTool.Models.Article", null)
                         .WithMany("ArticleComments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Article");
-                });
-
-            modelBuilder.Entity("BloggingTool.Models.ArticleContent", b =>
-                {
-                    b.HasOne("BloggingTool.Models.Article", "Article")
-                        .WithOne("ArticleContent")
-                        .HasForeignKey("BloggingTool.Models.ArticleContent", "ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Article");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.ArticleLike", b =>
                 {
-                    b.HasOne("BloggingTool.Models.Article", "Article")
+                    b.HasOne("BloggingTool.Models.Article", null)
                         .WithMany("ArticleLikes")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BloggingTool.Models.EmailAccount", "EmailAccount")
+                    b.HasOne("BloggingTool.Models.EmailAccount", null)
                         .WithMany("ArticleLikes")
                         .HasForeignKey("EmailAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Article");
-
-                    b.Navigation("EmailAccount");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.Blog", b =>
                 {
-                    b.HasOne("BloggingTool.Models.EmailAccount", "EmailAccount")
+                    b.HasOne("BloggingTool.Models.EmailAccount", null)
                         .WithMany("Blogs")
                         .HasForeignKey("EmailAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("EmailAccount");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.EmailAccount", b =>
                 {
-                    b.HasOne("BloggingTool.Models.User", "User")
+                    b.HasOne("BloggingTool.Models.User", null)
                         .WithMany("EmailAccounts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BloggingTool.Models.Article", b =>
                 {
                     b.Navigation("ArticleComments");
-
-                    b.Navigation("ArticleContent")
-                        .IsRequired();
 
                     b.Navigation("ArticleLikes");
                 });
